@@ -36,25 +36,25 @@ function shuffleDeck(deck) {
 
 function dealNewGame() {
   const deck = shuffleDeck(generateDeck());
-  const tableau = [];
+  const table = [];
 
   for (let i = 0; i < 7; i++) {
     const pile = deck.splice(0, i + 1).map((card, index, array) => ({
       ...card,
       faceUp: index === array.length - 1, // only the last card is face up
     }));
-    tableau.push(pile);
+    table.push(pile);
   }
 
   return {
-    tableau,
+    table,
     foundation: [[], [], [], []], // 4 empty foundations
     stock: deck, // remaining cards in the stock
     waste: [], // empty waste pile
   };
 }
 
-function canMoveCardToTableau(fromCard, toCard) {
+function canMoveCardTotable(fromCard, toCard) {
   return fromCard.color !== toCard.color && fromCard.rank === toCard.rank - 1;
 }
 
@@ -68,35 +68,30 @@ function canMoveCardToFoundation(card, foundationPile) {
   return topCard.suit === card.suit && card.rank === topCard.rank + 1;
 }
 
-function moveCardToTableau(
-  gameState,
-  fromPileIndex,
-  fromCardIndex,
-  toPileIndex
-) {
-  const fromPile = gameState.tableau[fromPileIndex];
-  const toPile = gameState.tableau[toPileIndex];
+function moveCardTotable(gameState, fromPileIndex, fromCardIndex, toPileIndex) {
+  const fromPile = gameState.table[fromPileIndex];
+  const toPile = gameState.table[toPileIndex];
 
   const movingCards = fromPile.slice(fromCardIndex);
   const targetCard = toPile[toPile.length - 1];
 
   const isValid = targetCard
-    ? canMoveCardToTableau(movingCards[0], targetCard)
+    ? canMoveCardTotable(movingCards[0], targetCard)
     : movingCards[0].rank === 13; // Allow Kings on empty piles
 
   if (!isValid) return false;
 
   // Remove from source
-  gameState.tableau[fromPileIndex] = fromPile.slice(0, fromCardIndex);
+  gameState.table[fromPileIndex] = fromPile.slice(0, fromCardIndex);
 
   // Flip next card if needed
-  const newFromPile = gameState.tableau[fromPileIndex];
+  const newFromPile = gameState.table[fromPileIndex];
   if (newFromPile.length && !newFromPile[newFromPile.length - 1].faceUp) {
     newFromPile[newFromPile.length - 1].faceUp = true;
   }
 
   // Add to destination
-  gameState.tableau[toPileIndex] = [...toPile, ...movingCards];
+  gameState.table[toPileIndex] = [...toPile, ...movingCards];
 
   return true;
 }
@@ -135,11 +130,11 @@ function moveWasteToFoundation(gameState) {
   return false;
 }
 
-function moveWasteToTableau(gameState, toPileIndex) {
+function moveWasteTotable(gameState, toPileIndex) {
   const card = gameState;
   if (!card) return false;
 
-  const toPile = gameState.tableau[toPileIndex];
+  const toPile = gameState.table[toPileIndex];
   const topCard = toPile[toPile.length - 1];
 
   const valid =
@@ -150,7 +145,7 @@ function moveWasteToTableau(gameState, toPileIndex) {
 
   if (valid) {
     gameState.waste.pop();
-    gameState.tableau[toPileIndex].push(card);
+    gameState.table[toPileIndex].push(card);
     return true;
   }
   return false;
@@ -160,8 +155,8 @@ function checkWin(gameState) {
   return gameState.foundation.every((pile) => pile.length === 13);
 }
 
-function moveTableauToFoundation(gameState, fromPileIndex) {
-  const fromPile = gameState.tableau[fromPileIndex];
+function movetableToFoundation(gameState, fromPileIndex) {
+  const fromPile = gameState.table[fromPileIndex];
   if (fromPile.length === 0) return false;
 
   const card = fromPile[fromPile.length - 1]; // Get the top card
@@ -183,14 +178,14 @@ function moveTableauToFoundation(gameState, fromPileIndex) {
   return false;
 }
 
-function moveFoundationToTableau(gameState, suit, toPileIndex) {
+function moveFoundationTotable(gameState, suit, toPileIndex) {
   const foundationIndex = SUITS.indexOf(suit);
   const foundationPile = gameState.foundation[foundationIndex];
 
   if (!foundationPile.length) return false;
 
   const card = foundationPile[foundationPile.length - 1];
-  const toPile = gameState.tableau[toPileIndex];
+  const toPile = gameState.table[toPileIndex];
   const topCard = toPile[toPile.length - 1];
 
   const valid =
@@ -201,7 +196,7 @@ function moveFoundationToTableau(gameState, suit, toPileIndex) {
 
   if (valid) {
     foundationPile.pop();
-    gameState.tableau[toPileIndex].push(card);
+    gameState.table[toPileIndex].push(card);
     return true;
   }
 
@@ -212,13 +207,13 @@ module.exports = {
   generateDeck,
   shuffleDeck,
   dealNewGame,
-  canMoveCardToTableau,
+  canMoveCardTotable,
   canMoveCardToFoundation,
-  moveCardToTableau,
+  moveCardTotable,
   drawFromStock,
   moveWasteToFoundation,
-  moveWasteToTableau,
+  moveWasteTotable,
   checkWin,
-  moveTableauToFoundation,
-  moveFoundationToTableau,
+  movetableToFoundation,
+  moveFoundationTotable,
 };
