@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 // Generates cards for a solitaire game
 
 const SUITS = ["hearts", "diamonds", "clubs", "spades"];
@@ -58,8 +57,6 @@ function dealNewGame() {
 function canMoveCardToTableau(fromCard, toCard) {
   return fromCard.color !== toCard.color && fromCard.rank === toCard.rank - 1;
 }
-
-// Can Card move to the pile?
 
 // Can move card to the foundation pile?
 function canMoveCardToFoundation(card, foundationPile) {
