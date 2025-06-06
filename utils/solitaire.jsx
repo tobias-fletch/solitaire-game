@@ -55,7 +55,11 @@ function dealNewGame() {
 }
 
 function canMoveCardTotable(fromCard, toCard) {
-  return fromCard.color !== toCard.color && fromCard.rank === toCard.rank - 1;
+  if (!toCard) {
+    return true;
+  } else {
+    return fromCard.color !== toCard.color && fromCard.rank === toCard.rank - 1;
+  }
 }
 
 // Can move card to the foundation pile?
